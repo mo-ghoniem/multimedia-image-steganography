@@ -939,11 +939,12 @@ def extract_text(self,image_name):
 
 
 
-class PSNR():
-    def __init__():
+class GetPSNR():
+    
+    def __init__(self):
         pass
 
-    def calculate_PSNR(original, compressed):
+    def calculate_PSNR(self, original, compressed):
         img1 = cv2.imread(original)
         stego = cv2.imread(compressed)
         mse = np.mean((img1 - stego) ** 2)

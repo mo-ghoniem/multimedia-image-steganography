@@ -28,7 +28,7 @@ urlpatterns = [
     path('Audio-two-Encode/', views.AudioTwoEncode, name="Audio-two-Encode"),
     path('image-dct-encode/', views.ImageDCTEncode, name="image-dct-encode"),
     path('image-dct-decode/', views.ImageDCTDecode, name="image-dct-decode"),
-    path('image-psnr/', views.getPsnr, name="image-psnr"),
+    #path('image-psnr/', views.getPsnr, name="image-psnr"),
     
     
 ]

@@ -13,7 +13,7 @@ import io
 import cv2
 from cv2 import imread
 import numpy as np
-from .models import Image_LSB,Audio_LSB
+from .models import GetPSNR, Image_LSB,Audio_LSB
 import wave
 import bitarray
 
@@ -39,7 +39,7 @@ def overview(request):
 
 @api_view(['POST'])
 def ImageEncode(request):
-    #response = {}
+    response = {}
     base64_image = request.data.get("img")
     stego_text = request.data.get("text")
     format, imgstr = base64_image.split(';base64,')
@@ -47,15 +47,22 @@ def ImageEncode(request):
         f.write(b64decode(imgstr))
     
     img_name = f.name 
-    
+    print(img_name)
     image = Image_LSB()
-
+    
     image.encode_text(img_name, stego_text, 'afterfoo.png')
     #with open("afterfoo.png", "rb") as image_file:
         #encoded_string = base64.b64encode(image_file.read())
 
-    #response['data'] = encoded_string
-    return Response("encoded")
+    img_name2 = 'afterfoo.png' 
+     
+    psnr = GetPSNR()
+
+    x,y = psnr.calculate_PSNR("test3.jpg","afterfoo.png")
+
+    response['psnr'] = x 
+    response['mse'] = y 
+    return Response( response)
 
 
 @api_view(['GET'])
@@ -193,8 +200,8 @@ def ImageDCTEncode(request):
     return Response("encoded") 
 
 
-@api_view(['POST'])
-def getPsnr(request):
+#@api_view(['POST'])
+""" def getPsnr(request):
     
     base64_image1 = request.data.get("img1")
     base64_image2 = request.data.get("img2")
@@ -215,4 +222,4 @@ def getPsnr(request):
     x = psnr.calculate_PSNR(img_name1, img_name2)
 
     response['data'] = x
-    return Response(response) 
+    return Response(response)  """

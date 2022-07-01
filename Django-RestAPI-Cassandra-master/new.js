@@ -27,6 +27,9 @@ const inpFile = document.getElementById("upload")
 const previewContainer = document.getElementById("imagePreview")
 const previewImage = previewContainer.querySelector(".image-preview-image")
 const previewDefaultText = previewContainer.querySelector(".image-preview-default-text")
+var psnrText = document.getElementById('psnrText')
+var mseText = document.getElementById("mseText")
+var decodedText = document.getElementById("stegText")
 
 const inpFile2 = document.getElementById("upload2")
 const previewContainer2 = document.getElementById("imagePreview2")
@@ -138,7 +141,13 @@ function encode(baseImage){
   }
   ).then(function (response) {
     // The API call was successful!
-    console.log('success!', response);
+    response.json().then(function(response){
+      psnrText.innerHTML = response['psnr']
+      mseText.innerHTML = response['mse']
+      //document.getElementById("psnrText").innerHTML = response['psnr'];
+      console.log(response['psnr'])
+    });
+    
 
     previewDefaultText3.style.display = "none";
     previewImage3.style.display = "block";
@@ -158,13 +167,20 @@ function decode(baseImage){
       body: baseImage,
     }
     ).then(function (response) {
-      // The API call was successful!
-      console.log('success!', response);
+      response.json().then(function (response){
+          // The API call was successful!
+      console.log('success!!!', response.data);
+      //hossam = JSON.stringify(response);
+      //console.log(response['data']);
+      //console.log("this is "+hossam);
+      decodedText.innerHTML = response['data']
+      });
     }).catch(function (err) {
       // There was an error
       console.warn('Something went wrong.', err);
     });
   }
+
 
   function twoDecode(baseImage){
     fetch(url,{
@@ -225,13 +241,13 @@ function decode(baseImage){
 function onEncodeClicked(){
     var stegoText = document.getElementById("stegoText").value;
     var data = JSON.stringify({ "img": base, "text": stegoText}); 
-    dctEncode(data);
+    encode(data);
     previewImageFun();
 }
 
 function onDecodeClicked(){
     var data = JSON.stringify({ "img": base,});
-    dctDecode(data);
+    decode(data);
 }
 
 function previewImageFun(){
