@@ -97,44 +97,9 @@ inpFile.addEventListener("change", function(){
 });
 
 
-/* const submitImage = document.getElementById("send");
-submitImage.addEventListener("click", fetch(url,{
-  method: 'GET',
-  headers: myHeaders,
-  body: base,
-}
-).then(function (response) {
-  // The API call was successful!
-  console.log('success!', response);
-}).catch(function (err) {
-  // There was an error
-  console.warn('Something went wrong.', err);
-})); */
 
-
-
-
-//const submitImage = document.getElementById("send");
-
-/* submitImage.addEventListener("Mouse", fetch(url,{
-  method: 'POST',
-  headers: myHeaders,
-  body: data
-}
-).then(function (response) {
-  // The API call was successful!
-  console.log('success!', response);
-  console.log(data);
-}).catch(function (err) {
-  // There was an error
-  console.warn('Something went wrong.', err);
-})); */
-
-
-
-
-function encode(baseImage){
-  fetch(urlEncode,{
+function encode(baseImage, url){
+  fetch(url,{
     method: 'POST',
     headers: myHeaders,
     body: baseImage,
@@ -160,8 +125,8 @@ function encode(baseImage){
 
 }
 
-function decode(baseImage){
-    fetch(urlDecode,{
+function decode(baseImage, url){
+    fetch(url,{
       method: 'POST',
       headers: myHeaders,
       body: baseImage,
@@ -182,72 +147,54 @@ function decode(baseImage){
   }
 
 
-  function twoDecode(baseImage){
-    fetch(url,{
-      method: 'POST',
-      headers: myHeaders,
-      body: baseImage,
-    }
-    ).then(function (response) {
-      // The API call was successful!
-      console.log('success!', response);
-      console.log(baseImage);
-    }).catch(function (err) {
-      // There was an error
-      console.warn('Something went wrong.', err);
-    });
-  }
-
-  function dctEncode(baseImage){
-    fetch(urlEncodeDct,{
-      method: 'POST',
-      headers: myHeaders,
-      body: baseImage,
-    }
-    ).then(function (response) {
-      // The API call was successful!
-      console.log('success!', response);
-  
-      previewDefaultText3.style.display = "none";
-      previewImage3.style.display = "block";
-      previewImage3.setAttribute("src", 'afterfoo.png')
-  
-    }).catch(function (err) {
-      // There was an error
-      console.warn('Something went wrong.', err);
-    });
-  
-  }
-  
-  function dctDecode(baseImage){
-      fetch(urlDecodeDct,{
-        method: 'POST',
-        headers: myHeaders,
-        body: baseImage,
-      }
-      ).then(function (response) {
-        // The API call was successful!
-        console.log('success!', response);
-      }).catch(function (err) {
-        // There was an error
-        console.warn('Something went wrong.', err);
-      });
-    }
-
-
-
-
-
 function onEncodeClicked(){
-    var stegoText = document.getElementById("stegoText").value;
-    var data = JSON.stringify({ "img": base, "text": stegoText}); 
-    encode(data);
-    previewImageFun();
+
+    var radios = document.getElementsByName("Technique")
+    var selected = Array.from(radios).find(radio => radio.checked)
+
+    if(selected.value == "LSB"){
+      var stegoText = document.getElementById("stegoText").value;
+      var data = JSON.stringify({ "img": base, "text": stegoText}); 
+      encode(data, urlEncode);
+      previewImageFun();
+
+    }else if(selected.value == "DCT"){
+
+      var stegoText = document.getElementById("stegoText").value;
+      var data = JSON.stringify({ "img": base, "text": stegoText}); 
+      encode(data, urlEncodeDct);
+      previewImageFun();
+
+    }else{
+
+      var stegoText = document.getElementById("stegoText").value;
+      var data = JSON.stringify({ "img": base, "text": stegoText}); 
+      encode(data, urlEncodeDct);
+      previewImageFun();
+
+    }
 }
 
 function onDecodeClicked(){
-    var data = JSON.stringify({ "img": base,});
-    decode(data);
+
+    var radios = document.getElementsByName("TechniqueDec")
+    var selected = Array.from(radios).find(radio => radio.checked)
+
+    if(selected.value == "LSB"){
+
+      var data = JSON.stringify({ "img": base,});
+      decode(data, urlDecode);
+
+    }else if(selected.value == "DCT"){
+
+      var data = JSON.stringify({ "img": base,});
+      decode(data, urlDecodeTwo);
+
+    }else{
+      var data = JSON.stringify({ "img": base,});
+      decode(data, urlDecodeDct);
+    }
+
 }
 
 function previewImageFun(){
@@ -256,22 +203,6 @@ function previewImageFun(){
 
 
 
-/* var input = document.querySelector('input[type="file"]')
-formData.append("file", input.files[0])
-fetch(url,{
-  method: 'POST',
-  headers: myHeaders,
-  body: JSON.stringify({
-    "img": formData
-  }),
-}
-).then(function (response) {
-  // The API call was successful!
-  console.log('success!', response);
-}).catch(function (err) {
-  // There was an error
-  console.warn('Something went wrong.', err);
-}); */
 
 
 

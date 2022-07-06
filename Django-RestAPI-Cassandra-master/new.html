@@ -47,6 +47,25 @@
 
                     <p id="mseText">This is Mse: </p>
                     <p id="psnrText">This is PSNR: </p>
+
+                    <form id="submit">
+                        Select Technique:<br>
+                      
+                        <label>
+                          <input type="radio" name="Technique" value="LSB" required>
+                          LSB
+                        </label><br>
+                      
+                        <label>
+                          <input type="radio" name="Technique" value="DCT">
+                          DCT
+                        </label><br>
+                      
+                        <label>
+                          <input type="radio" name="Technique" value="CNN">
+                          CNN
+                        </label><br>
+                      </form>
                         
                     <button type="file" id="send" onclick="onEncodeClicked()">ENCODE</button>
                 </div>
@@ -80,6 +99,32 @@
             <div class="decoderow" id="decodeSec">
                 <div class="grid4">
                     <h2 id="stegText">Hello</h2>
+
+                    <form id="submitDec">
+                        Select Technique:<br>
+                      
+                        <label>
+                          <input type="radio" name="TechniqueDec" value="LSBDec" required>
+                          LSB
+                        </label><br>
+
+                        <label>
+                            <input type="radio" name="TechniqueDec" value="2LSBDec" required>
+                            2LSB
+                          </label><br>
+                      
+                        <label>
+                          <input type="radio" name="TechniqueDec" value="DCTDec">
+                          DCT
+                        </label><br>
+                      
+                        <label>
+                          <input type="radio" name="TechniqueDec" value="CNNDec">
+                          CNN
+                        </label><br>
+                      
+                      
+                      </form>
                     <div>
                         <p id="span1Text">Stego Image:</p> 
                         <input type="file" id="upload2"><br>
@@ -110,6 +155,34 @@
                 <br>
 
 
+            <div class="hiderow" id="encodeSec">
+                <div class="grid1">
+                    <div>
+                        <p id="span1Text">Cover Image:</p> 
+                        <input type="file" id="upload"><br>
+                    </div>
+                    <div class="image-preview" id="imagePreview">
+                        <img src="" alt="Image Preview" class="image-preview-image">
+                        <span class="image-preview-default-text">Image Preview</span>
+                    </div>
+                        
+                    <button type="file" id="send" onclick="onEncodeClicked()">PSNR</button>
+                </div>
+                
+
+                <div class="grid3">
+                    <div>
+                        <p id="span3Text">Result Image:</p>
+                        <input type="file" id="upload"><br>
+                        <img id="stegImg" src="">
+                    </div>
+                    <div class="image-preview3" id="imagePreview3">
+                        <img src="" alt="Image Preview3" class="image-preview-image3" id="stegImg">
+                        <span class="image-preview-default-text3">Image Preview</span>
+                    </div>
+                </div>
+
+            </div>
             
 
         </div>
