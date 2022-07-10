@@ -3,6 +3,8 @@ const urlEncode = 'http://127.0.0.1:8000/image-encode/'
 const urlDecodeTwo = 'http://127.0.0.1:8000/image-decodeTwoLeast/'
 const urlEncodeDct = 'http://127.0.0.1:8000/image-dct-encode/'
 const urlDecodeDct = 'http://127.0.0.1:8000/image-dct-decode/'
+const urlEncryption = 'http://127.0.0.1:8000/encrypt-message/'
+const urlDecryption = 'http://127.0.0.1:8000/decrypt-message/'
 
 const myHeaders = new Headers();
 myHeaders.append('Access-Control-Allow-Headers', "*")
@@ -30,6 +32,9 @@ const previewDefaultText = previewContainer.querySelector(".image-preview-defaul
 var psnrText = document.getElementById('psnrText')
 var mseText = document.getElementById("mseText")
 var decodedText = document.getElementById("stegText")
+var encryptText = document.getElementById("encryptedText")
+var encryptionKey = document.getElementById("encryptionKey")
+var decryptedText = document.getElementById("decryptedText")
 
 const inpFile2 = document.getElementById("upload2")
 const previewContainer2 = document.getElementById("imagePreview2")
@@ -146,6 +151,43 @@ function decode(baseImage, url){
     });
   }
 
+  function encrypt(originalText, url){
+    fetch(url,{
+      method: 'POST',
+      headers: myHeaders,
+      body: originalText,
+    }
+    ).then(function (response) {
+      response.json().then(function (response){
+          // The API call was successful!
+      console.log('success!', response.data);
+      encryptText.innerHTML = response['message']
+      encryptionKey.innerHTML = response['key']
+      });
+    }).catch(function (err) {
+      // There was an error
+      console.warn('Something went wrong.', err);
+    });
+  }
+
+  function decrypt(data, url){
+    fetch(url,{
+      method: 'POST',
+      headers: myHeaders,
+      body: data,
+    }
+    ).then(function (response) {
+      response.json().then(function (response){
+          // The API call was successful!
+      console.log('success!', response.data);
+      decryptedText.innerHTML = response['message']
+      });
+    }).catch(function (err) {
+      // There was an error
+      console.warn('Something went wrong.', err);
+    });
+  }
+
 
 function onEncodeClicked(){
 
@@ -180,15 +222,15 @@ function onDecodeClicked(){
     var radios = document.getElementsByName("TechniqueDec")
     var selected = Array.from(radios).find(radio => radio.checked)
 
-    if(selected.value == "LSB"){
+    if(selected.value == "LSBDec"){
 
       var data = JSON.stringify({ "img": base,});
       decode(data, urlDecode);
 
-    }else if(selected.value == "DCT"){
+    }else if(selected.value == "DCTDec"){
 
       var data = JSON.stringify({ "img": base,});
-      decode(data, urlDecodeTwo);
+      decode(data, urlDecodeDct);
 
     }else{
       var data = JSON.stringify({ "img": base,});
@@ -200,6 +242,23 @@ function onDecodeClicked(){
 function previewImageFun(){
   document.getElementsByClassName("image-preview-image3").src="afterfoo.png";
 }
+
+function onEncryptClicked(){
+
+  var stegoText = document.getElementById("originalText").value;
+  var data = JSON.stringify({ "text": stegoText}); 
+  encrypt(data, urlEncryption);
+}
+
+function onDecryptClicked(){
+
+  var encrypted_message = document.getElementById("encryptedText2").value;
+  var key = document.getElementById("key").value;
+  var data = JSON.stringify({ "encrypted_message": encrypted_message, "key": key}); 
+  decrypt(data, urlDecryption);
+}
+
+
 
 
 

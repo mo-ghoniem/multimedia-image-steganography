@@ -158,30 +158,30 @@
             <div class="hiderow" id="encodeSec">
                 <div class="grid1">
                     <div>
-                        <p id="span1Text">Cover Image:</p> 
-                        <input type="file" id="upload"><br>
+                        <p id="span1Text">Original Text:</p> 
+                        <input type="text" id="originalText"><br>
                     </div>
-                    <div class="image-preview" id="imagePreview">
-                        <img src="" alt="Image Preview" class="image-preview-image">
-                        <span class="image-preview-default-text">Image Preview</span>
-                    </div>
+                    <h2 id="encryptedText">Encrypted Text: </h2>
+                    <h2 id="encryptionKey">Encryption Key: </h2>
+                    
                         
-                    <button type="file" id="send" onclick="onEncodeClicked()">PSNR</button>
+                    <button type="file" id="send" onclick="onEncryptClicked()">Encrypt</button>
                 </div>
-                
 
-                <div class="grid3">
+                <div class="grid4">
                     <div>
-                        <p id="span3Text">Result Image:</p>
-                        <input type="file" id="upload"><br>
-                        <img id="stegImg" src="">
+                        <p id="span1Text">Decrypted Message:</p> 
+                        <h3>Encrypted Message</h3>
+                        <input type="text" id="encryptedText2"><br>
+                        <h3>Key</h3>
+                        <input type="text" title="Key" id="key"><br>
                     </div>
-                    <div class="image-preview3" id="imagePreview3">
-                        <img src="" alt="Image Preview3" class="image-preview-image3" id="stegImg">
-                        <span class="image-preview-default-text3">Image Preview</span>
-                    </div>
+                    <h2 id="decryptedText">Decrypted Text: </h2>
+                    
+                    
+                        
+                    <button type="file" id="send" onclick="onDecryptClicked()">Decrypt</button>
                 </div>
-
             </div>
             
 

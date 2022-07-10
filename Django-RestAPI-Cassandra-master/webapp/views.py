@@ -13,7 +13,7 @@ import io
 import cv2
 from cv2 import imread
 import numpy as np
-from .models import GetPSNR, Image_LSB,Audio_LSB
+from .models import DCT, EncryptMsg, GetPSNR, Image_LSB,Audio_LSB
 import wave
 import bitarray
 
@@ -172,16 +172,16 @@ def ImageDCTDecode(request):
     #image_64_decode = base64.b64decode(base64_image) 
     #image_result = open('deer_decode.png', 'wb') # create a writable image and write the decoding result
     #image_result.write(image_64_decode)
-    image = Image_LSB()
+    image = DCT()
     #image_name = "afterlsb.png"
-    x= image.decode_textLeast('foo.png')
+    x= image.extract_text('afterfoo.png')
+    image.extract_encoded_data_from_DCT
     response['data'] = x
     return Response(response)
 
-
 @api_view(['POST'])
 def ImageDCTEncode(request):
-    #response = {}
+    response = {}
     base64_image = request.data.get("img")
     stego_text = request.data.get("text")
     format, imgstr = base64_image.split(';base64,')
@@ -190,36 +190,41 @@ def ImageDCTEncode(request):
     
     img_name = f.name 
     
-    image = Image_LSB()
+    image = DCT()
 
-    image.encode_text(img_name, stego_text, 'afterfoo.png')
+    image.DCT_encode(img_name, stego_text, 'afterfoo.png')
     #with open("afterfoo.png", "rb") as image_file:
         #encoded_string = base64.b64encode(image_file.read())
 
     #response['data'] = encoded_string
-    return Response("encoded") 
+    psnr = GetPSNR()
+
+    x,y = psnr.calculate_PSNR("test3.jpg","afterfoo.png")
+
+    response['psnr'] = x 
+    response['mse'] = y 
+    return Response(response)
 
 
-#@api_view(['POST'])
-""" def getPsnr(request):
-    
-    base64_image1 = request.data.get("img1")
-    base64_image2 = request.data.get("img2")
-    stego_text = request.data.get("text")
-    format, imgstr = base64_image1.split(';base64,')
-    with open("test3.jpg","wb") as f:
-        f.write(b64decode(imgstr))
-    
-    imgstr2 = base64_image2.split(';base64,')
-    with open("afterfoo.png", "wb") as o:
-        o.write(b64decode(imgstr2))
-    
-    img_name1 = f.name 
-    img_name2 = o.name
-    
-    psnr = PSNR()
 
-    x = psnr.calculate_PSNR(img_name1, img_name2)
 
-    response['data'] = x
-    return Response(response)  """
+@api_view(['POST'])
+def getEncryptedMessage(request):
+    response = {}
+    encrypted_message = request.data.get("text")
+    
+    encrypt = EncryptMsg()
+    m, k = encrypt.ecnryption(encrypted_message)
+    response['message'] = m
+    response['key'] = k
+    return Response(response)
+
+@api_view(['POST'])
+def getDecryptedMessage(request):
+    response = {}
+    encrypted_message = request.data.get("encrypted_message")
+    key = request.data.get("key")
+    decrypt = EncryptMsg()
+    decodedMessage = decrypt.decryption(encrypted_message, key)
+    response['message'] = decodedMessage
+    return Response(response)
