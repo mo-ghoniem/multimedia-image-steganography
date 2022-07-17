@@ -287,6 +287,16 @@ body{
     width: 100%;
 }
 
+.image-preview-imageCarr {
+    display: none;
+    width: 100%;
+}
+
+.image-preview-imageSteg {
+    display: none;
+    width: 100%;
+}
+
 .image-preview3 {
     width: 300px;
     min-height: 300px;

@@ -12,6 +12,9 @@ import bitarray
 import bitstring
 import struct
 from cryptography.fernet import Fernet
+import tensorflow as tf
+import keras
+
 
 
 HORIZ_AXIS = 1
@@ -514,7 +517,7 @@ class Audio_LSB():
         self.frame_bytes = bytearray(list(self.audio.readframes(self.audio.getnframes())))
 
    
-   def isValid(self, string, framebytes):
+   def isValid(self, string):
       bits = bitarray.bitarray()
       bits.frombytes(string.encode('utf-8'))
       if len(bits) < len(self.frame_bytes):
@@ -524,23 +527,30 @@ class Audio_LSB():
    
 
    def encode(self, string):
-      string = string + '#####'
-      ba= bitarray.bitarray()
-      ba.frombytes(string.encode('utf-8'))
-      bits = ba.tolist()
-
+    string = string + '#####'
+    ba= bitarray.bitarray()
+    ba.frombytes(string.encode('utf-8'))
+    bits = ba.tolist()
+    print(len(self.frame_bytes))
+    if(self.isValid(string)):
+      methodused = "Will use lsb"
       for i, bit in enumerate(bits):
-         self.frame_bytes[i] = (self.frame_bytes[i] & 254) | bit
-      frame_modified = bytes(self.frame_bytes)
-    
-      newAudio =  wave.open('samplelsb.wav', 'wb')
-      newAudio.setparams(self.audio.getparams())
-      newAudio.writeframes(frame_modified)
-    
+          self.frame_bytes[i] = (self.frame_bytes[i] & 254) | bit
+    else:
+      j=0
+      methodused = "Will use two lsb"
+      for i in range(0,(len(bits)//2)):
+          tmp = str(int(bits[j])) + str(int(bits[j+1]))
+          self.frame_bytes[i] = (self.frame_bytes[i] & 252) | int(tmp,2)
+          j+=2
+    frame_modified = bytes(self.frame_bytes)
+    newAudio =  wave.open('output_encoding.wav', 'wb')
+    newAudio.setparams(self.audio.getparams())
+    newAudio.writeframes(frame_modified)
 
-      newAudio.close()
-      self.audio.close()
-      
+    newAudio.close()
+    self.audio.close()
+    return methodused
       
    def twoEncode(self, string):
       string = string + '#####'
@@ -577,7 +587,7 @@ class Audio_LSB():
    
    
    def twoDecode(self):
-      audio = wave.open("twolsb.wav", mode='rb')
+      audio = wave.open(self.audio_name, mode='rb')
       frame_bytes = bytearray(list(audio.readframes(audio.getnframes())))
       extracted = ['{:02b}'.format(frame_bytes[i] & 3) for i in range(len(frame_bytes))]
       extracted = ''.join(extracted)
@@ -622,3 +632,47 @@ class EncryptMsg():
         fernet = Fernet(key)
         decMessage = fernet.decrypt(EncodedMessage.encode())
         return decMessage
+
+class Cnn():
+    def __init__(self):
+        pass
+
+    def test_normalize(self,payload, host):
+        normalized_payload = tf.divide(
+            tf.math.subtract(payload, tf.reduce_min(payload)),
+            tf.math.subtract(tf.reduce_max(payload), tf.reduce_min(payload)))
+        normalized_host = tf.divide(
+            tf.math.subtract(host, tf.reduce_min(host)),
+            tf.math.subtract(tf.reduce_max(host), tf.reduce_min(host)))
+        return normalized_payload, normalized_host, payload, host
+
+    def normed_to_image(self,normed_image, min_, max_):
+        return (normed_image * (max_ - min_)) + min_
+    
+    def model(self,name):
+        loaded = keras.models.load_model(name)
+        return loaded
+    
+    def predict(self,img,img2):
+        loaded = keras.models.load_model("model500")
+        a = cv2.imread(img)  
+        b = cv2.imread(img2)
+        x = cv2.resize(np.array(a),(300,300))
+        y = cv2.resize(np.array(b),(300,300))
+        host_example = x.astype(int)
+        payload_example = y.astype(int)
+        host_example.resize(1,300,300,3)
+        payload_example.resize(1,300,300,3)
+        norm_payload,norm_host,payload,host = self.test_normalize(payload_example,host_example)
+        encoded_host, decoded_payload = loaded([norm_host, norm_payload])
+        host_output = encoded_host.numpy()
+        payload_output = np.array(decoded_payload)
+        host_output = self.normed_to_image(host_output, np.min(host), np.max(host))
+        payload_output = self.normed_to_image(payload_output, np.min(payload),np.max(payload))
+        payload_output = payload_output[0,:,:,:]
+        cv2.imwrite("ENCODED_OUTPUT.png",host_output[0,:,:,:])
+        payload_output = payload_output.astype(int)
+        payload_output = payload_output[0,:,:,:]
+        payload_output = payload_output[:,:,::-1]
+        cv2.imwrite("DECODED_OUTPUT.png",payload_output)
+        return (host_output[0,:,:,:],payload_output)

@@ -5,6 +5,7 @@ const urlEncodeDct = 'http://127.0.0.1:8000/image-dct-encode/'
 const urlDecodeDct = 'http://127.0.0.1:8000/image-dct-decode/'
 const urlEncryption = 'http://127.0.0.1:8000/encrypt-message/'
 const urlDecryption = 'http://127.0.0.1:8000/decrypt-message/'
+const urlCnn = 'http://127.0.0.1:8000/cnn-encode/'
 
 const myHeaders = new Headers();
 myHeaders.append('Access-Control-Allow-Headers', "*")
@@ -44,6 +45,16 @@ const previewDefaultText2 = previewContainer2.querySelector(".image-preview-defa
 const previewContainer3 = document.getElementById("imagePreview3")
 const previewImage3 = previewContainer3.querySelector(".image-preview-image3")
 const previewDefaultText3 = previewContainer3.querySelector(".image-preview-default-text3")
+
+const carrier = document.getElementById("carrier")
+const previewContainerCarr = document.getElementById("imagePreviewCarr")
+const previewImageCarr = previewContainerCarr.querySelector(".image-preview-imageCarr")
+const previewDefaultTextCarr = previewContainerCarr.querySelector(".image-preview-default-textCarr")
+
+const stegoIm = document.getElementById("stegoIm")
+const previewContainerSteg = document.getElementById("imagePreviewSteg")
+const previewImageSteg = previewContainerSteg.querySelector(".image-preview-imageSteg")
+const previewDefaultTextSteg = previewContainerSteg.querySelector(".image-preview-default-textSteg")
 
 inpFile2.addEventListener("change", function(){
     const file = this.files[0]
@@ -130,7 +141,7 @@ function encode(baseImage, url){
 
 }
 
-function decode(baseImage, url){
+function decode( baseImage, url){
     fetch(url,{
       method: 'POST',
       headers: myHeaders,
@@ -261,8 +272,58 @@ function onDecryptClicked(){
 
 
 
+carrier.addEventListener("change", function(){
+  const file = this.files[0]
 
+  if (file) {
+    reader = new FileReader();
 
+    previewDefaultTextCarr.style.display = "none";
+    previewImageCarr.style.display = "block";
 
+    reader.addEventListener("load", function(){
+      base = this.result;
+      //data.append('img', JSON.stringify(base))
+      console.log(base)
+      previewImageCarr.setAttribute("src", this.result);
+    });
+
+    reader.readAsDataURL(file);
+
+  }else{
+
+    previewDefaultTextCarr.style.display = "null";
+    previewImageCarr.style.display = "null";
+    previewImageCarr.setAttribute("src", "");
+  }
+
+});
+
+stegoIm.addEventListener("change", function(){
+  const file = this.files[0]
+
+  if (file) {
+    reader = new FileReader();
+
+    previewDefaultTextSteg.style.display = "none";
+    previewImageSteg.style.display = "block";
+
+    reader.addEventListener("load", function(){
+      base = this.result;
+      //data.append('img', JSON.stringify(base))
+      console.log(base)
+      previewImageSteg.setAttribute("src", this.result);
+    });
+
+    reader.readAsDataURL(file);
+
+  }else{
+
+    previewDefaultTextSteg.style.display = "null";
+    previewImageSteg.style.display = "null";
+    previewImageSteg.setAttribute("src", "");
+  }
+
+});
 
 

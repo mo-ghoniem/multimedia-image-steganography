@@ -13,7 +13,7 @@ import io
 import cv2
 from cv2 import imread
 import numpy as np
-from .models import DCT, EncryptMsg, GetPSNR, Image_LSB,Audio_LSB
+from .models import DCT, EncryptMsg, GetPSNR, Image_LSB,Audio_LSB,Cnn
 import wave
 import bitarray
 
@@ -65,11 +65,15 @@ def ImageEncode(request):
     return Response( response)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def ImagedecodeTwoLeast(request):
     response = {}
+    base64_image = request.data.get("img")
+    format, imgstr = base64_image.split(';base64,')
+    with open("foo.png","wb") as f:
+        f.write(b64decode(imgstr))
     image = Image_LSB()
-    x= image.decode_text('afterlsb.png')
+    x = image.decode_text('foo.png')
     response['data'] = x
     return Response(response)
 
@@ -132,7 +136,7 @@ def AudioEncode(request ):
 
     string = request.data.get("text")
     music = Audio_LSB(audio_name)
-    music.encode(string)
+    x = music.encode(string)
     """ with open(, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
     output_audio = base64.b64encode(music.encode(string))
@@ -141,7 +145,7 @@ def AudioEncode(request ):
  """
 
     
-    return Response("encoded")
+    return Response(x)
 
 @api_view(['POST'])
 def AudioTwoEncode(request ):
@@ -227,4 +231,23 @@ def getDecryptedMessage(request):
     decrypt = EncryptMsg()
     decodedMessage = decrypt.decryption(encrypted_message, key)
     response['message'] = decodedMessage
+    return Response(response)
+
+@api_view(['POST'])
+def predictModel(request):
+    response = {}
+    image = request.data.get("host")
+    image2 = request.data.get("payload")
+    format, imgstr = image.split(';base64,')
+    format, imgstr2 = image2.split(';base64,')
+    with open("host.png","wb") as f:
+        f.write(b64decode(imgstr))
+    with open("payload.png","wb") as f:
+        f.write(b64decode(imgstr2))
+    host = "host.png"
+    payload = "payload.png"
+    model = Cnn()
+    x,y = model.predict(host,payload)
+    response['encodedImage'] = x
+    response['decodedImage'] = y
     return Response(response)

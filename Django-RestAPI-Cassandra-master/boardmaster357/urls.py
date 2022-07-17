@@ -29,6 +29,8 @@ urlpatterns = [
     path('image-dct-encode/', views.ImageDCTEncode, name="image-dct-encode"),
     path('image-dct-decode/', views.ImageDCTDecode, name="image-dct-decode"),
     path('encrypt-message/', views.getEncryptedMessage, name="encrypt-message"),
-    path('decrypt-message/', views.getDecryptedMessage, name="decrypt-message"),    
-    
+    path('decrypt-message/', views.getDecryptedMessage, name="decrypt-message"),
+    path('cnn-encode/', views.predictModel, name="cnn-encode"),
+
+        
 ]
